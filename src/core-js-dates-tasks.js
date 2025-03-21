@@ -233,8 +233,10 @@ function getNextFridayThe13th(date) {
  * Date(2024, 5, 1) => 2
  * Date(2024, 10, 10) => 4
  */
-function getQuarter(/* date */) {
-  throw new Error('Not implemented');
+function getQuarter(date) {
+  const d = new Date(date);
+  const array = [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4];
+  return array[d.getMonth()];
 }
 
 /**
@@ -255,8 +257,35 @@ function getQuarter(/* date */) {
  * { start: '01-01-2024', end: '15-01-2024' }, 1, 3 => ['01-01-2024', '05-01-2024', '09-01-2024', '13-01-2024']
  * { start: '01-01-2024', end: '10-01-2024' }, 1, 1 => ['01-01-2024', '03-01-2024', '05-01-2024', '07-01-2024', '09-01-2024']
  */
-function getWorkSchedule(/* period, countWorkDays, countOffDays */) {
-  throw new Error('Not implemented');
+
+function parseDate(dateString) {
+  const [day, month, year] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+function getWorkSchedule(period, countWorkDays, countOffDays) {
+  const start = parseDate(period.start);
+  const end = parseDate(period.end);
+  const result = [];
+  let i = countWorkDays;
+  let loop = countWorkDays + countOffDays;
+  while (start.getTime() <= end.getTime()) {
+    if (i > 0) {
+      const formattedDate = start.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      });
+      result.push(formattedDate.replace(/[/]/g, '-'));
+      i -= 1;
+    }
+    start.setTime(start.getTime() + 1000 * 60 * 60 * 24);
+    loop -= 1;
+    if (loop === 0) {
+      i = countWorkDays;
+      loop = countWorkDays + countOffDays;
+    }
+  }
+  return result;
 }
 
 /**
@@ -271,8 +300,12 @@ function getWorkSchedule(/* period, countWorkDays, countOffDays */) {
  * Date(2022, 2, 1) => false
  * Date(2020, 2, 1) => true
  */
-function isLeapYear(/* date */) {
-  throw new Error('Not implemented');
+function isLeapYear(date) {
+  const year = new Date(date).getFullYear();
+  if (year % 400 === 0) return true;
+  if (year % 100 === 0) return false;
+  if (year % 4 === 0) return true;
+  return false;
 }
 
 module.exports = {
